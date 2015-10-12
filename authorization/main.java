@@ -1,7 +1,7 @@
 package classwork.authorization;
 
 /**
- * Created by Булат on 06.10.2015.
+ * Created by пїЅпїЅпїЅпїЅпїЅ on 06.10.2015.
  */
 
 public class main {
