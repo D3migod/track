@@ -1,8 +1,6 @@
 package classwork.authorization;
 
 
-import classwork.authorization.exceptionPackage.authorizationException;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,7 +18,7 @@ public class authorization {
         System.out.println("Enter login");
         String inputLogin = in.readLine();
         if (this.userStore.isUserExist(inputLogin)) {
-            throw new authorizationException("User " + inputLogin + "already exists");
+            authorizationError("User " + inputLogin + " already exists");
         }
         System.out.println("Enter password");
         String inputPassword = in.readLine();
@@ -40,27 +38,27 @@ public class authorization {
                 System.out.println("Successful authorization");
                 System.out.println("Hi, " + inputLogin);
             } else {
-                throw new authorizationException("Wrong password");
+                authorizationError("Wrong password");
             }
         } else {
-            throw new authorizationException("No such user");
+            authorizationError("No such user");
         }
     }
 
+    public void authorizationError(String e) throws IOException {
+        System.out.println(e);
+        chooseYourDestiny();
+    }
+
     public void chooseYourDestiny() throws IOException {
-        try {
-            System.out.println("Sign in (enter \"1\") or sign up (enter \"2\")?");
-            String answer = in.readLine();
-            if (answer.equals("1")) {
-                this.signIn();
-            } else if (answer.equals("2")) {
-                this.signUp();
-            } else {
-                throw new authorizationException("Unexpected answer");
-            }
-        } catch (authorizationException e) {
-            System.err.println(e.getMessage());
-            chooseYourDestiny();
+        System.out.println("Sign in (enter \"1\") or sign up (enter \"2\")?");
+        String answer = in.readLine();
+        if (answer.equals("1")) {
+            this.signIn();
+        } else if (answer.equals("2")) {
+            this.signUp();
+        } else {
+            authorizationError("Unexpected answer");
         }
     }
 
