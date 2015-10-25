@@ -1,20 +1,22 @@
 package track.project.session;
 
+import track.project.authorization.Password;
+
 /**
  * Created by Булат on 12.10.2015.
  */
 public class User {
     private String name;
-    private Integer pass;
+    private Password pass;
     private String nick;
 
-    public User(String name, Integer pass) {
+    public User(String name, Password pass) {
         this.name = name;
         this.pass = pass;
         this.nick = name;
     }
 
-    public User(String name, Integer pass, String nick) {
+    public User(String name, Password pass, String nick) {
         this.name = name;
         this.pass = pass;
         this.nick = nick;
@@ -28,11 +30,11 @@ public class User {
         this.name = name;
     }
 
-    public Integer getPass() {
+    public Password getPass() {
         return pass;
     }
 
-    public void setPass(Integer pass) {
+    public void setPass(Password pass) {
         this.pass = pass;
     }
 

@@ -9,8 +9,8 @@ import java.util.Map;
  */
 public class HelpCommand implements Command {
     private Map<String, Command> commands;
-    int numberOfArguments = 1;
-    String description = " - show all commands";
+    private static final int NUMBER_OF_ARGUMENTS = 2;
+    private final String description = " - show all commands";
 
     public HelpCommand(Map<String, Command> commands) {
         this.commands = commands;
@@ -18,19 +18,14 @@ public class HelpCommand implements Command {
 
     @Override
     public void execute(Session session, String[] args) {
-        for (Map.Entry<String, Command> entry : commands.entrySet()) {
-            System.out.println(entry.getKey() + entry.getValue().getDescription());
+        if (NUMBER_OF_ARGUMENTS == args.length) {
+            for (Map.Entry<String, Command> entry : commands.entrySet()) {
+                System.out.println(entry.getKey() + entry.getValue().getDescription());
+            }
+        } else {
+            System.out.println("Wrong number of arguments");
+            System.out.println(args[0] + description);
         }
-    }
-
-    @Override
-    public boolean checkArgumentsValidity(String[] args) {
-        return (this.numberOfArguments == args.length);
-    }
-
-    @Override
-    public boolean checkUserValidity(boolean requiresUser) {
-        return true;
     }
 
     @Override

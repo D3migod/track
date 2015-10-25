@@ -6,25 +6,24 @@ import track.project.session.Session;
  * Created by Булат on 15.10.2015.
  */
 public class UserCommand implements Command {
-    int numberOfArguments = 2;
-    String description = " Nickname - changes your nick to \"Nickname\".";
+    private static final int NUMBER_OF_ARGUMENTS = 2;
+    private final String description = " Nickname - changes your nick to \"Nickname\".";
 
     public UserCommand() {
     }
 
     @Override
     public void execute(Session session, String[] args) {
-        session.getSessionUser().setNick(args[1]);
-    }
-
-    @Override
-    public boolean checkArgumentsValidity(String[] args) {
-        return (this.numberOfArguments == args.length);
-    }
-
-    @Override
-    public boolean checkUserValidity(boolean requiresUser) {
-        return (true == requiresUser);
+        if (NUMBER_OF_ARGUMENTS == args.length) {
+            if (session.isUserSet() == true) {
+                session.getSessionUser().setNick(args[1]);
+            } else {
+                System.out.println("Sign in to use " + args[0] + " command");
+            }
+        } else {
+            System.out.println("Wrong number of arguments");
+            System.out.println(args[0] + description);
+        }
     }
 
     @Override

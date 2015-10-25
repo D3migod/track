@@ -8,9 +8,5 @@ import track.project.session.Session;
 public interface Command {
     void execute(Session session, String[] args);
 
-    boolean checkArgumentsValidity(String[] args);
-
-    boolean checkUserValidity(boolean requiresUser);
-
     String getDescription();
 }

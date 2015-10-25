@@ -8,11 +8,11 @@ import track.project.session.Session;
  * Created by Булат on 18.10.2015.
  */
 public class RegisterCommand implements Command {
-    Authorization authService;
-    HistoryStore historyStore;
-    int numberOfArguments1 = 1;
-    int numberOfArguments2 = 3;
-    String description = " Login Password - sign up using \"Login\" \"Password\" combination.";
+    private static final int NUMBER_OF_ARGUMENTS1 = 1;
+    private static final int NUMBER_OF_ARGUMENTS2 = 3;
+    private final String description = " Login Password - sign up using \"Login\" \"Password\" combination.";
+    private Authorization authService;
+    private HistoryStore historyStore;
 
     public RegisterCommand(Authorization authService, HistoryStore historyStore) {
         this.authService = authService;
@@ -21,24 +21,21 @@ public class RegisterCommand implements Command {
 
     @Override
     public void execute(Session session, String[] args) {
-        if (session.isUserSet()) {
-            historyStore.updateMessageList(session.getSessionUser().getName(), session.getCurrentHistory());
-        }
-        if (this.numberOfArguments1 == args.length) {
+
+        if (NUMBER_OF_ARGUMENTS1 == args.length) {
+            if (session.isUserSet()) {
+                historyStore.updateMessageList(session.getSessionUser().getName(), session.getCurrentHistory());
+            }
             authService.signUp();
-        } else {
+        } else if (NUMBER_OF_ARGUMENTS2 == args.length) {
+            if (session.isUserSet()) {
+                historyStore.updateMessageList(session.getSessionUser().getName(), session.getCurrentHistory());
+            }
             authService.signUp(args[1], args[2]);
+        } else {
+            System.out.println("Wrong number of arguments");
+            System.out.println(args[0] + description);
         }
-    }
-
-    @Override
-    public boolean checkArgumentsValidity(String[] args) {
-        return ((this.numberOfArguments1 == args.length) || (this.numberOfArguments2 == args.length));
-    }
-
-    @Override
-    public boolean checkUserValidity(boolean requiresUser) {
-        return true;
     }
 
     @Override

@@ -1,8 +1,17 @@
 package track.project;
 
 import track.project.authorization.Authorization;
+import track.project.authorization.FileUserStore;
 import track.project.authorization.UserStore;
-import track.project.commands.*;
+import track.project.commands.Command;
+import track.project.commands.ExitCommand;
+import track.project.commands.FindCommand;
+import track.project.commands.HelpCommand;
+import track.project.commands.HistoryCommand;
+import track.project.commands.LoginCommand;
+import track.project.commands.RegisterCommand;
+import track.project.commands.UserCommand;
+import track.project.history.FileHistoryStore;
 import track.project.history.HistoryStore;
 import track.project.session.Session;
 
@@ -19,14 +28,10 @@ import java.util.Map;
 public class Main {
 
     public static void main(String[] args) {
-        UserStore userStore = new UserStore();
-        if (userStore.isFileExist()) {
-            userStore.readFromFile();
-        }
-        HistoryStore historyStore = new HistoryStore();
-        if (historyStore.isFileExist()) {
-            historyStore.readFromFile();
-        }
+        UserStore userStore = new FileUserStore();
+
+        HistoryStore historyStore = new FileHistoryStore();
+
         Session session = new Session();
         Authorization authService = new Authorization(userStore, session);
         Map<String, Command> commands = new HashMap<>();
