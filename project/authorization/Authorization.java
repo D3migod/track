@@ -23,13 +23,13 @@ public class Authorization {
         try {
             System.out.println("Enter login");
             String inputLogin = in.readLine();
-            if (((FileUserStore) userStore).isUserExist(inputLogin)) {
+            if (userStore.isUserExist(inputLogin)) {
                 authorizationError("User " + inputLogin + " already exists");
             }
             System.out.println("Enter password");
             String inputPassword = in.readLine();
             User currentUser = new User(inputLogin, new Password(inputPassword));
-            ((FileUserStore) userStore).addUser(currentUser);
+            userStore.addUser(currentUser);
             System.out.println("Successful registration");
             session.setSessionUser(currentUser);
             return;
@@ -39,11 +39,11 @@ public class Authorization {
     }
 
     public void signUp(String inputLogin, String inputPassword) {
-        if (((FileUserStore) userStore).isUserExist(inputLogin)) {
+        if (userStore.isUserExist(inputLogin)) {
             authorizationError("User " + inputLogin + " already exists");
         }
         User currentUser = new User(inputLogin, new Password(inputPassword));
-        ((FileUserStore) userStore).addUser(currentUser);
+        userStore.addUser(currentUser);
         System.out.println("Successful registration");
         session.setSessionUser(currentUser);
         return;
@@ -53,12 +53,12 @@ public class Authorization {
         try {
             System.out.println("Enter login");
             String inputLogin = in.readLine();
-            if ((((FileUserStore) userStore).getUser(inputLogin) != null)) {
+            if (userStore.getUser(inputLogin) != null) {
                 System.out.println("Enter password");
                 String inputPassword = in.readLine();
-                if (((FileUserStore) userStore).compareLoginPass(inputLogin, inputPassword)) {
+                if (userStore.compareLoginPass(inputLogin, inputPassword)) {
                     System.out.println("Successful authorization");
-                    session.setSessionUser(((FileUserStore) userStore).getUser(inputLogin));
+                    session.setSessionUser(userStore.getUser(inputLogin));
                     return;
                 } else {
                     authorizationError("Wrong password");
@@ -72,10 +72,10 @@ public class Authorization {
     }
 
     public void signIn(String inputLogin, String inputPassword) {
-        if ((((FileUserStore) userStore).getUser(inputLogin) != null)) {
-            if (((FileUserStore) userStore).compareLoginPass(inputLogin, inputPassword)) {
+        if (userStore.getUser(inputLogin) != null) {
+            if (userStore.compareLoginPass(inputLogin, inputPassword)) {
                 System.out.println("Successful authorization");
-                session.setSessionUser(((FileUserStore) userStore).getUser(inputLogin));
+                session.setSessionUser(userStore.getUser(inputLogin));
                 return;
             } else {
                 System.out.println("Wrong password");

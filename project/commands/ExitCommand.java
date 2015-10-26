@@ -25,8 +25,8 @@ public class ExitCommand implements Command {
         if (NUMBER_OF_ARGUMENTS == args.length) {
             if (session.isUserSet()) {
                 historyStore.updateMessageList(session.getSessionUser().getName(), session.getCurrentHistory());
-                ((FileHistoryStore) historyStore).save();
-                ((FileUserStore) userStore).save();
+                historyStore.save();
+                userStore.save();
             }
         } else {
             System.out.println("Wrong number of arguments");

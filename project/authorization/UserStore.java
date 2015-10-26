@@ -11,4 +11,8 @@ public interface UserStore {
     public void addUser(User user);
 
     public User getUser(String name);
+
+    public void save();
+
+    public boolean compareLoginPass(String login, String pass);
 }

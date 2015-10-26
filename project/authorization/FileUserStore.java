@@ -31,22 +31,27 @@ public class FileUserStore implements UserStore {
         }
     }
 
+    @Override
     public boolean isUserExist(String login) {
         return this.loginUserMap.containsKey(login);
     }
 
+    @Override
     public void addUser(User user) {
         this.loginUserMap.put(user.getName(), user);
     }
 
+    @Override
     public User getUser(String name) {
         return this.loginUserMap.get(name);
     }
 
+    @Override
     public boolean compareLoginPass(String name, String pass) {
         return this.loginUserMap.get(name).getPass().checkPassword(pass);
     }
 
+    @Override
     public void save() {
         try {
             Writer writer = new BufferedWriter(new OutputStreamWriter(

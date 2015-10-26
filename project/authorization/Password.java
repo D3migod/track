@@ -34,7 +34,7 @@ public class Password {
     }
 
     private byte[] getHash(String password) {
-        byte[] input = null; //???
+        byte[] input = null;
         try {
             MessageDigest digest = MessageDigest.getInstance(ALGORITHM);
             digest.reset();

@@ -9,4 +9,6 @@ public interface HistoryStore {
     public List<Message> getUserHistory(String login);
 
     public void updateMessageList(String login, List<Message> currentHistory);
+
+    public void save();
 }
