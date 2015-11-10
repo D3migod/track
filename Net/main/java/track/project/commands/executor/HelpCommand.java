@@ -1,5 +1,7 @@
-package track.project.commands;
+package track.project.commands.executor;
 
+import track.project.commands.Command;
+import track.project.commands.CommandType;
 import track.project.commands.result.CommandResult;
 import track.project.message.Message;
 import track.project.session.Session;

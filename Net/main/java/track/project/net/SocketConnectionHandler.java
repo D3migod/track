@@ -42,9 +42,6 @@ public class SocketConnectionHandler implements ConnectionHandler {
         if (log.isDebugEnabled()) {
             log.debug(msg.toString());
         }
-
-        // TODO: ����� ������ ���� ������� �������� �����������/������������� ���������
-        // �� ���� ��������� ������� ��������
         out.write(protocol.encode(msg));
         out.flush();
     }

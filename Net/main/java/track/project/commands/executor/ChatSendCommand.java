@@ -1,5 +1,6 @@
-package track.project.commands;
+package track.project.commands.executor;
 
+import track.project.commands.Command;
 import track.project.commands.result.CommandResult;
 import track.project.commands.result.ResultStatus;
 import track.project.message.Message;
@@ -28,7 +29,7 @@ public class ChatSendCommand implements Command {
                 Message sendMessage = new SendMessage(chatId, chatSendMessage.getMessage());
                 sendMessage.setSender(session.getSessionUser().getId());
                 messageStore.addMessage(chatId, sendMessage);
-                return new CommandResult(sendMessage);
+                return new CommandResult();
             } else {
                 return new CommandResult("Chat with " + chatId.toString() + " id does not exist", ResultStatus.FAILED);
             }

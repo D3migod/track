@@ -1,5 +1,6 @@
-package track.project.commands;
+package track.project.commands.executor;
 
+import track.project.commands.Command;
 import track.project.commands.result.CommandResult;
 import track.project.commands.result.ResultStatus;
 import track.project.message.Message;

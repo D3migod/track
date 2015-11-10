@@ -1,5 +1,6 @@
 package track.project.message;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import track.project.commands.CommandType;
 
@@ -15,7 +16,7 @@ public class SendMessage extends Message {
     private Long time;
     private String message;
     static final String FORMAT = "MM.dd.yyyy HH:mm:ss"; //we need FORMAT if FileHistoryStore to safe message in this format
-    private static final int SECONDS_MULTIPLIER = 1000; //converting milliseconds to seconds
+    private static final long SECONDS_MULTIPLIER = 1000L; //converting milliseconds to seconds
 
     public SendMessage() {
         setType(CommandType.MSG_SEND);
@@ -23,7 +24,7 @@ public class SendMessage extends Message {
 
     public SendMessage(Long chatId, String message) {
         this.chatId = chatId;
-        this.time = (new Date()).getTime();
+        this.time = new Date().getTime();
         this.message = message;
         setType(CommandType.MSG_SEND);
     }
@@ -35,6 +36,7 @@ public class SendMessage extends Message {
         setType(CommandType.MSG_SEND);
     }
 
+    @JsonIgnore
     public String getTimeMessage() {
         return new SimpleDateFormat(FORMAT).format(new Date(time * SECONDS_MULTIPLIER)) + " " + message;
     }

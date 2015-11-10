@@ -4,15 +4,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import track.project.commands.result.ResultMessage;
 import track.project.message.Message;
+import track.project.message.SendMessage;
 import track.project.message.request.ChatCreateMessage;
+import track.project.message.request.ChatFindMessage;
+import track.project.message.request.ChatHistoryMessage;
 import track.project.message.request.ChatSendMessage;
 import track.project.message.request.ExitMessage;
-import track.project.message.request.ChatFindMessage;
 import track.project.message.request.HelpMessage;
-import track.project.message.request.ChatHistoryMessage;
-import track.project.message.request.RegisterMessage;
-import track.project.message.SendMessage;
 import track.project.message.request.LoginMessage;
+import track.project.message.request.RegisterMessage;
 import track.project.message.request.UserInfoMessage;
 import track.project.message.request.UserMessage;
 import track.project.message.request.UserPassMessage;
@@ -20,7 +20,6 @@ import track.project.session.Session;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,7 +28,6 @@ import java.util.Scanner;
 /**
  * Created by Булат on 04.11.2015.
  */
-
 
 
 /**
@@ -70,10 +68,10 @@ public class ThreadedClient implements MessageListener {
         System.out.println("$");
         while (true) {
             String input = scanner.nextLine();
-            if ("q".equals(input)) {
+            client.processInput(input);
+            if ("\\exit".equals(input)) {
                 return;
             }
-            client.processInput(input);
         }
     }
 
@@ -86,7 +84,7 @@ public class ThreadedClient implements MessageListener {
                 if (tokens.length > 1) {
                     ChatCreateMessage chatCreateMessage = new ChatCreateMessage();
                     List<Long> participantIds = new LinkedList<>();
-                    for (int i = 1; i<tokens.length; i++) {
+                    for (int i = 1; i < tokens.length; i++) {
                         participantIds.add(Long.valueOf(tokens[i]));
                     }
                     chatCreateMessage.setParticipantsIds(participantIds);
@@ -122,8 +120,8 @@ public class ThreadedClient implements MessageListener {
                         ChatSendMessage chatSendMessage = new ChatSendMessage();
                         chatSendMessage.setChatId(Long.valueOf(tokens[1]));
                         StringBuilder builder = new StringBuilder();
-                        for(int i = 2; i < tokens.length; i++) {
-                            builder.append(tokens[i]);
+                        for (int i = 2; i < tokens.length; i++) {
+                            builder.append(tokens[i] + " ");
                         }
                         chatSendMessage.setMessage(builder.toString());
                         handler.send(chatSendMessage);
@@ -223,31 +221,31 @@ public class ThreadedClient implements MessageListener {
         }
 
 
-
     }
 
     /**
      * Получено сообщение из handler, как обрабатывать
-     *
      */
     @Override
     public void onMessage(Session session, Message message) {
-        ResultMessage resultMessage = (ResultMessage) message;
-        Object returnedObject = resultMessage.getReturnedObject();
-        log.info("Returned object: {}", returnedObject);
-        if (returnedObject instanceof String) {
-            System.out.printf("%s", (String) returnedObject + "\n");
-        } else if (returnedObject instanceof List) {
-            for (Object responseObject : (List)returnedObject) {
-                System.out.printf("%s", responseObject.toString() + "\n");
+        if (message instanceof ResultMessage) {
+            ResultMessage resultMessage = (ResultMessage) message;
+            Object returnedObject = resultMessage.getReturnedObject();
+            log.info("Returned object: {}", returnedObject);
+            if (returnedObject instanceof String) {
+                System.out.printf("%s", (String) returnedObject + "\n");
+            } else if (returnedObject instanceof List) {
+                for (Object responseObject : (List) returnedObject) {
+                    System.out.printf("%s", responseObject.toString() + "\n");
+                }
+            } else if (returnedObject == null) {
+                log.info("Success");
+            } else {
+                System.out.printf("%s", "Something unfamiliar received\n");
+                log.info("Unproper returned object class: {}", returnedObject.getClass());
             }
-        } else if (returnedObject instanceof Message) {
-            System.out.printf("%s", ((SendMessage) returnedObject).getTimeMessage() + "\n");
-        } else if (returnedObject == null) {
-            System.out.printf("%s", "Success\n");
-        } else {
-            System.out.printf("%s", "Something unfamiliar received\n");
-            log.info("Unproper returned object class: {}", returnedObject.getClass());
+        } else if (message instanceof SendMessage) {
+            System.out.printf("%s", ((SendMessage) message).getTimeMessage());
         }
     }
 

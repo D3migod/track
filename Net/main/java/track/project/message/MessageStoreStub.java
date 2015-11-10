@@ -1,5 +1,10 @@
 package track.project.message;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import track.project.net.SessionManager;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -14,6 +19,8 @@ public class MessageStoreStub implements MessageStore {
 
     public static final AtomicLong messageCounter = new AtomicLong(0);
     public static final AtomicLong chatCounter = new AtomicLong(0);
+    static Logger log = LoggerFactory.getLogger(MessageStoreStub.class);
+    SessionManager sessionManager;
 
     List<SendMessage> messages1 = Arrays.asList(
             new SendMessage(1L, "msg1_1"),
@@ -46,6 +53,10 @@ public class MessageStoreStub implements MessageStore {
 
         chats.put(1L, chat1);
         chats.put(2L, chat2);
+    }
+
+    public MessageStoreStub(SessionManager sessionManager) {
+        this.sessionManager = sessionManager;
     }
 
     @Override
@@ -86,7 +97,15 @@ public class MessageStoreStub implements MessageStore {
         if (chat != null) {
             message.setId(messageCounter.getAndIncrement());
             chat.addMessage(message.getId());
+            List<Long> participantIds = chat.getParticipantIds();
             messages.put(message.getId(), message);
+            for (Long participant : participantIds) {
+                try {
+                    sessionManager.getSessionByUser(participant).getConnectionHandler().send(message);
+                } catch (IOException e) {
+                    log.info("{} did not receive the message", participant);
+                }
+            }
         } else {
             throw new IllegalArgumentException("Chat " + chatId + " does not exist");
         }

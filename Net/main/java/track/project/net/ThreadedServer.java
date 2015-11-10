@@ -4,20 +4,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import track.project.authorization.UserStore;
 import track.project.authorization.UserStoreStub;
-import track.project.commands.ChatCreateCommand;
-import track.project.commands.ChatFindCommand;
-import track.project.commands.ChatHistoryCommand;
-import track.project.commands.ChatSendCommand;
+import track.project.commands.executor.ChatCreateCommand;
+import track.project.commands.executor.ChatFindCommand;
+import track.project.commands.executor.ChatHistoryCommand;
+import track.project.commands.executor.ChatSendCommand;
 import track.project.commands.Command;
 import track.project.commands.CommandHandler;
 import track.project.commands.CommandType;
-import track.project.commands.ExitCommand;
-import track.project.commands.HelpCommand;
-import track.project.commands.LoginCommand;
-import track.project.commands.RegisterCommand;
-import track.project.commands.UserCommand;
-import track.project.commands.UserInfoCommand;
-import track.project.commands.UserPassCommand;
+import track.project.commands.executor.ExitCommand;
+import track.project.commands.executor.HelpCommand;
+import track.project.commands.executor.LoginCommand;
+import track.project.commands.executor.RegisterCommand;
+import track.project.commands.executor.UserCommand;
+import track.project.commands.executor.UserInfoCommand;
+import track.project.commands.executor.UserPassCommand;
 import track.project.message.MessageStore;
 import track.project.message.MessageStoreStub;
 
@@ -62,7 +62,7 @@ public class ThreadedServer {
         SessionManager sessionManager = new SessionManager();
 
         UserStore userStore = new UserStoreStub();
-        MessageStore messageStore = new MessageStoreStub();
+        MessageStore messageStore = new MessageStoreStub(sessionManager);
 
         Map<CommandType, Command> commands = new HashMap<>();
         commands.put(CommandType.CHAT_CREATE, new ChatCreateCommand(userStore, messageStore));
