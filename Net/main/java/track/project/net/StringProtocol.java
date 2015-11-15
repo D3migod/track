@@ -11,6 +11,8 @@ import java.io.IOException;
 /**
  * Created by Булат on 04.11.2015.
  */
+
+// TODO: Это уже не StringProtocol -> rename to JsonProtocol
 public class StringProtocol implements Protocol {
     static Logger log = LoggerFactory.getLogger(StringProtocol.class);
 

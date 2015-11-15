@@ -16,6 +16,7 @@ import java.util.List;
  * Created by ����� on 15.10.2015.
  */
 public class ChatHistoryCommand implements Command {
+    // TODO: private
     MessageStore messageStore;
     private final String description = "\\chat_history Id- show all message history in the \"Id\" chat.\n\\history N Id- show last N messages in the \"Id\" chat";
 
@@ -25,6 +26,7 @@ public class ChatHistoryCommand implements Command {
 
     @Override
     public CommandResult execute(Session session, Message message) {
+        // TODO: результат уже boolean => if (session.isUserSet()) {...}
         if (session.isUserSet() == true) {
             ChatHistoryMessage chatHistoryMessage = (ChatHistoryMessage) message;
             List<Long> sendMessageIds = messageStore.getMessagesFromChat(chatHistoryMessage.getChatId());

@@ -38,6 +38,8 @@ public class Session {
         this.connectionHandler = connectionHandler;
     }
 
+    // FIXME: rename to isLoggedIn() потому что в хэндлере у вас ошибка называется ResultStatus.NOT_LOGGINED
+    // так будет виден единый подход к именованию
     public boolean isUserSet() {
         return sessionUser != null;
     }

@@ -6,6 +6,8 @@ import track.project.message.Message;
 /**
  * Created by Булат on 09.11.2015.
  */
+
+// TODO: а чем отличается от SendMessage?
 public class ChatSendMessage extends Message {
     private Long chatId;
     private String message;

@@ -22,6 +22,7 @@ public class ChatSendCommand implements Command {
 
     @Override
     public CommandResult execute(Session session, Message message) {
+        // FIXME: can be simplyfied to if (session.isUserSet()) {...}
         if (session.isUserSet() == true) {
             ChatSendMessage chatSendMessage = (ChatSendMessage) message;
             Long chatId = chatSendMessage.getChatId();
@@ -31,6 +32,7 @@ public class ChatSendCommand implements Command {
                 messageStore.addMessage(chatId, sendMessage);
                 return new CommandResult();
             } else {
+                // FIXME: сообщение потрется в CommandHandler (при статусе !=OK вы создаете там новое сообщение об ошибке)
                 return new CommandResult("Chat with " + chatId.toString() + " id does not exist", ResultStatus.FAILED);
             }
         } else {

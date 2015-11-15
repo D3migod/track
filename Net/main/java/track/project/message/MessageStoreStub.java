@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class MessageStoreStub implements MessageStore {
 
+    // Для чего нужны?
     public static final AtomicLong messageCounter = new AtomicLong(0);
     public static final AtomicLong chatCounter = new AtomicLong(0);
     static Logger log = LoggerFactory.getLogger(MessageStoreStub.class);

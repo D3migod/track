@@ -18,11 +18,17 @@ public class UserCommand implements Command {
 
     @Override
     public CommandResult execute(Session session, Message message) {
+
+        // FIXME: во всех местах поправьте, у вас IDEA не подсвечивает это место?
         if (session.isUserSet() == true) {
             session.getSessionUser().setNick(((UserMessage) message).getNick());
         } else {
             return new CommandResult(ResultStatus.NOT_LOGGINED);
         }
+
+        // TODO: Для такого случая я бы в CommandResult создал статический инстанс
+        // RESULT_OK = new CommandResult(); со статусом OK
+        // а то слишком много объектов создается под капотом у new CommandResult()
         return new CommandResult();
     }
 

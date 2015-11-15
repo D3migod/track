@@ -70,6 +70,8 @@ public class SocketConnectionHandler implements ConnectionHandler {
                     // �������� ���� ����������� ����� �������
                     notifyListeners(session, msg);
                 }
+
+                // TODO: слишком общий Exception
             } catch (Exception e) {
                 log.error("Failed to handle connection: {}", e);
                 e.printStackTrace();

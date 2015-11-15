@@ -50,6 +50,8 @@ public class ThreadedServer {
             this.sessionManager = sessionManager;
             this.commandHandler = commandHandler;
             sSocket = new ServerSocket(PORT);
+
+            // FIXME: Узнайте, для чего это используется, спрошу на РК =)
             sSocket.setReuseAddress(true);
         } catch (IOException e) {
             e.printStackTrace();

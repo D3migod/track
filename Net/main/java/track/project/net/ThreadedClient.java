@@ -228,6 +228,11 @@ public class ThreadedClient implements MessageListener {
      */
     @Override
     public void onMessage(Session session, Message message) {
+        // TODO: все таки лучше, если в ответ также будут приходить типизированные сообщения extends Message
+        // для каждого конкретного случая. Иначе скоро будет много веток. А если нужно возвратить не один объект, а несколько
+        // то вообще не будет работать
+
+        // Также можно переиспользовать код CommandHandler на клиенте
         if (message instanceof ResultMessage) {
             ResultMessage resultMessage = (ResultMessage) message;
             Object returnedObject = resultMessage.getReturnedObject();

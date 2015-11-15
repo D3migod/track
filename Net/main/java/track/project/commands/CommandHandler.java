@@ -34,6 +34,8 @@ public class CommandHandler implements MessageListener {
         ResultStatus resultStatus = commandResult.getStatus();
         log.info(COMMAND_EXECUTED_LOG, message.getType(), commandResult.getStatus());
         Message resultMessage;
+
+        // TODO: sendMessage можно вынести из блока case
         switch (resultStatus) {
             case OK:
                 resultMessage = commandResult.getMessage();
