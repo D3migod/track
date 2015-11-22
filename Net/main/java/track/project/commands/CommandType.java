@@ -11,10 +11,8 @@ public enum CommandType {
     USER_INFO,
     USER_PASS,
     USER_EXIT,
-    MSG_SEND,
     CHAT_CREATE,
     CHAT_HISTORY,
     CHAT_FIND,
-    CHAT_SEND,
-    MSG_RESULT
+    CHAT_SEND
 }

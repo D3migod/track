@@ -2,14 +2,12 @@ package track.project.net;
 
 import track.project.message.Message;
 
-import java.io.IOException;
-
 /**
- * Created by Булат on 03.11.2015.
+ * Created by пїЅпїЅпїЅпїЅпїЅ on 03.11.2015.
  */
 public interface ConnectionHandler extends Runnable {
 
-    void send(Message msg) throws IOException;
+    void send(Message msg);
 
     void addListener(MessageListener listener);
 

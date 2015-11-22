@@ -2,9 +2,9 @@ package track.project.commands.executor;
 
 import track.project.authorization.UserStore;
 import track.project.commands.Command;
-import track.project.commands.result.CommandResult;
 import track.project.message.Message;
 import track.project.message.MessageStore;
+import track.project.message.result.ExitResultMessage;
 import track.project.session.Session;
 
 /**
@@ -21,13 +21,13 @@ public class ExitCommand implements Command {
     }
 
     @Override
-    public CommandResult execute(Session session, Message message) {
-        if (session.isUserSet()) {
+    public void execute(Session session, Message message) {
+        if (session.isLoggedIn()) {
             messageStore.save();
             userStore.save();
-            return new CommandResult("Changes are saved. Exit");
         }
-        return new CommandResult("Exit");
+        Message resultMessage = ExitResultMessage.getResultOk();
+        session.getConnectionHandler().send(resultMessage);
     }
 
     @Override

@@ -2,9 +2,7 @@ package track.project.net;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import track.project.commands.result.ResultMessage;
 import track.project.message.Message;
-import track.project.message.SendMessage;
 import track.project.message.request.ChatCreateMessage;
 import track.project.message.request.ChatFindMessage;
 import track.project.message.request.ChatHistoryMessage;
@@ -16,6 +14,8 @@ import track.project.message.request.RegisterMessage;
 import track.project.message.request.UserInfoMessage;
 import track.project.message.request.UserMessage;
 import track.project.message.request.UserPassMessage;
+import track.project.message.result.additional.ResultMessage;
+import track.project.message.result.additional.ResultStatus;
 import track.project.session.Session;
 
 import java.io.IOException;
@@ -34,7 +34,7 @@ import java.util.Scanner;
  * Клиентская часть
  */
 public class ThreadedClient implements MessageListener {
-
+    private static String COMMAND_EXECUTED_LOG = "{} executed: {}";
     public static final int PORT = 19000;
     public static final String HOST = "localhost";
     static Logger log = LoggerFactory.getLogger(ThreadedClient.class);
@@ -61,12 +61,12 @@ public class ThreadedClient implements MessageListener {
     }
 
     public static void main(String[] args) throws Exception {
-        Protocol protocol = new StringProtocol();
+        Protocol protocol = new JsonProtocol();
         ThreadedClient client = new ThreadedClient(protocol);
 
         Scanner scanner = new Scanner(System.in);
-        System.out.println("$");
         while (true) {
+            System.out.printf("$");
             String input = scanner.nextLine();
             client.processInput(input);
             if ("\\exit".equals(input)) {
@@ -217,7 +217,8 @@ public class ThreadedClient implements MessageListener {
                 break;
 
             default:
-                System.out.println("Invalid input: " + line);
+                System.out.printf("Invalid input: " + line);
+                log.info("Invalid input: {}", line);
         }
 
 
@@ -228,38 +229,35 @@ public class ThreadedClient implements MessageListener {
      */
     @Override
     public void onMessage(Session session, Message message) {
-        // TODO: все таки лучше, если в ответ также будут приходить типизированные сообщения extends Message
-        // для каждого конкретного случая. Иначе скоро будет много веток. А если нужно возвратить не один объект, а несколько
-        // то вообще не будет работать
+        ResultMessage resultMessage = (ResultMessage) message;
 
-        // Также можно переиспользовать код CommandHandler на клиенте
-        if (message instanceof ResultMessage) {
-            ResultMessage resultMessage = (ResultMessage) message;
-            Object returnedObject = resultMessage.getReturnedObject();
-            log.info("Returned object: {}", returnedObject);
-            if (returnedObject instanceof String) {
-                System.out.printf("%s", (String) returnedObject + "\n");
-            } else if (returnedObject instanceof List) {
-                for (Object responseObject : (List) returnedObject) {
-                    System.out.printf("%s", responseObject.toString() + "\n");
+        ResultStatus resultStatus = resultMessage.getStatus();
+        log.info(COMMAND_EXECUTED_LOG, message.getType(), resultMessage.getStatus());
+        switch (resultStatus) {
+            case OK:
+                if (!resultMessage.messageIsNull()) {
+                    resultMessage.printMessage();
+                } else {
+                    System.out.printf("Success\n");
                 }
-            } else if (returnedObject == null) {
-                log.info("Success");
-            } else {
-                System.out.printf("%s", "Something unfamiliar received\n");
-                log.info("Unproper returned object class: {}", returnedObject.getClass());
-            }
-        } else if (message instanceof SendMessage) {
-            System.out.printf("%s", ((SendMessage) message).getTimeMessage());
+                break;
+            case FAILED:
+                resultMessage.printStatusInfo();
+                break;
+            case NOT_LOGGED_IN:
+                System.out.printf("Sign in to use this command\n");
+                break;
         }
     }
 
     private void logWrongArgumentsNumber(String cmdType) {
+        System.out.printf("Wrong number of arguments: " + cmdType);
         log.info("Wrong number of arguments: {}", cmdType);
     }
 
     private void logWrongArgumentsType(String cmdType) {
-        log.info("Wrong number of arguments: {}", cmdType);
+        System.out.printf("Wrong type of arguments: " + cmdType);
+        log.info("Wrong type of arguments: {}", cmdType);
     }
 
 }

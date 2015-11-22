@@ -2,12 +2,12 @@ package track.project.commands.executor;
 
 import track.project.authorization.UserStore;
 import track.project.commands.Command;
-import track.project.commands.result.CommandResult;
-import track.project.commands.result.ResultStatus;
 import track.project.message.Chat;
 import track.project.message.Message;
 import track.project.message.MessageStore;
 import track.project.message.request.ChatCreateMessage;
+import track.project.message.result.ChatCreateResultMessage;
+import track.project.message.result.additional.ResultStatus;
 import track.project.session.Session;
 
 import java.util.LinkedList;
@@ -27,8 +27,9 @@ public class ChatCreateCommand implements Command {
     }
 
     @Override
-    public CommandResult execute(Session session, Message message) {
-        if (session.isUserSet() == true) {
+    public void execute(Session session, Message message) {
+        Message resultMessage;
+        if (session.isLoggedIn()) {
             ChatCreateMessage chatCreateMessage = (ChatCreateMessage) message;
             List<Long> participantIds = chatCreateMessage.getParticipantsIds();
             List<Long> wrongParticipantsIds = new LinkedList<>();
@@ -41,15 +42,19 @@ public class ChatCreateCommand implements Command {
                 }
             }
             if (rightParticipantsIds.isEmpty()) {
-                return new CommandResult("All participant ids do not exist, chat was not created", ResultStatus.FAILED);
+                resultMessage = new ChatCreateResultMessage("All participant ids do not exist, chat was not created", ResultStatus.FAILED);
             } else {
-                rightParticipantsIds.add(session.getSessionUser().getId());
+                Long currentUserId = session.getSessionUser().getId();
+                if (!rightParticipantsIds.contains(currentUserId)) {
+                    rightParticipantsIds.add(session.getSessionUser().getId());
+                }
                 messageStore.addChat(new Chat(rightParticipantsIds));
-                return new CommandResult(wrongParticipantsIds);
+                resultMessage = new ChatCreateResultMessage(wrongParticipantsIds);
             }
         } else {
-            return new CommandResult(ResultStatus.NOT_LOGGINED);
+            resultMessage = new ChatCreateResultMessage(ResultStatus.NOT_LOGGED_IN);
         }
+        session.getConnectionHandler().send(resultMessage);
     }
 
     @Override

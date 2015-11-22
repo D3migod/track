@@ -45,6 +45,6 @@ public interface MessageStore {
 
     boolean isChatExist(Long chatId);
 
-    // TODO: а что за метод?
+    //заглушка
     void save();
 }

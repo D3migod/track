@@ -17,10 +17,9 @@ import java.util.List;
  * Created by ����� on 03.11.2015.
  */
 public class SocketConnectionHandler implements ConnectionHandler {
-
+    private static String SEND_FAILED_LOG = "Exception sending message {}: {}";
     static Logger log = LoggerFactory.getLogger(SocketConnectionHandler.class);
 
-    // ����������
     private List<MessageListener> listeners = new ArrayList<>();
     private Socket socket;
     private InputStream in;
@@ -38,22 +37,23 @@ public class SocketConnectionHandler implements ConnectionHandler {
     }
 
     @Override
-    public void send(Message msg) throws IOException {
+    public void send(Message msg) {
         if (log.isDebugEnabled()) {
             log.debug(msg.toString());
         }
-        out.write(protocol.encode(msg));
-        out.flush();
+        try {
+            out.write(protocol.encode(msg));
+            out.flush();
+        } catch (IOException e) {
+            log.info(SEND_FAILED_LOG, msg, e.getMessage());
+        }
     }
 
-    // �������� ��� ����������
     @Override
     public void addListener(MessageListener listener) {
         listeners.add(listener);
     }
 
-
-    // ��������� ����
     public void notifyListeners(Session session, Message msg) {
         listeners.forEach(it -> it.onMessage(session, msg));
     }
@@ -67,12 +67,9 @@ public class SocketConnectionHandler implements ConnectionHandler {
                 if (read > 0) {
                     Message msg = protocol.decode(Arrays.copyOf(buf, read));
                     log.info("message received: {}", msg);
-                    // �������� ���� ����������� ����� �������
                     notifyListeners(session, msg);
                 }
-
-                // TODO: слишком общий Exception
-            } catch (Exception e) {
+            } catch (IOException e) {
                 log.error("Failed to handle connection: {}", e);
                 e.printStackTrace();
                 Thread.currentThread().interrupt();

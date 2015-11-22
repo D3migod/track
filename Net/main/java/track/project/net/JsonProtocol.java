@@ -11,10 +11,8 @@ import java.io.IOException;
 /**
  * Created by Булат on 04.11.2015.
  */
-
-// TODO: Это уже не StringProtocol -> rename to JsonProtocol
-public class StringProtocol implements Protocol {
-    static Logger log = LoggerFactory.getLogger(StringProtocol.class);
+public class JsonProtocol implements Protocol {
+    static Logger log = LoggerFactory.getLogger(JsonProtocol.class);
 
     @Override
     public Message decode(byte[] bytes) {
@@ -22,7 +20,7 @@ public class StringProtocol implements Protocol {
         Message message = new Message();
         try {
             message = objectMapper.readValue(bytes, Message.class);
-        } catch(IOException e) {
+        } catch (IOException e) {
             log.info("Exception decoding message {}: " + e.getMessage(), message.toString());
         }
         log.info("decoded:{}", message.toString());

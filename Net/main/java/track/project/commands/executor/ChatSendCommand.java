@@ -1,12 +1,11 @@
 package track.project.commands.executor;
 
 import track.project.commands.Command;
-import track.project.commands.result.CommandResult;
-import track.project.commands.result.ResultStatus;
 import track.project.message.Message;
 import track.project.message.MessageStore;
-import track.project.message.SendMessage;
 import track.project.message.request.ChatSendMessage;
+import track.project.message.result.ChatSendResultMessage;
+import track.project.message.result.additional.ResultStatus;
 import track.project.session.Session;
 
 /**
@@ -21,23 +20,23 @@ public class ChatSendCommand implements Command {
     }
 
     @Override
-    public CommandResult execute(Session session, Message message) {
-        // FIXME: can be simplyfied to if (session.isUserSet()) {...}
-        if (session.isUserSet() == true) {
+    public void execute(Session session, Message message) {
+        Message resultMessage;
+        if (session.isLoggedIn()) {
             ChatSendMessage chatSendMessage = (ChatSendMessage) message;
             Long chatId = chatSendMessage.getChatId();
             if (messageStore.isChatExist(chatId)) {
-                Message sendMessage = new SendMessage(chatId, chatSendMessage.getMessage());
+                Message sendMessage = new ChatSendMessage(chatId, chatSendMessage.getMessage());
                 sendMessage.setSender(session.getSessionUser().getId());
                 messageStore.addMessage(chatId, sendMessage);
-                return new CommandResult();
+                resultMessage = ChatSendResultMessage.getResultOk();
             } else {
-                // FIXME: сообщение потрется в CommandHandler (при статусе !=OK вы создаете там новое сообщение об ошибке)
-                return new CommandResult("Chat with " + chatId.toString() + " id does not exist", ResultStatus.FAILED);
+                resultMessage = new ChatSendResultMessage("Chat with " + chatId.toString() + " id does not exist", ResultStatus.FAILED);
             }
         } else {
-            return new CommandResult(ResultStatus.NOT_LOGGINED);
+            resultMessage = new ChatSendResultMessage(ResultStatus.NOT_LOGGED_IN);
         }
+        session.getConnectionHandler().send(resultMessage);
     }
 
     @Override

@@ -2,9 +2,9 @@ package track.project.commands.executor;
 
 import track.project.authorization.UserStore;
 import track.project.commands.Command;
-import track.project.commands.result.CommandResult;
 import track.project.message.Message;
 import track.project.message.request.UserInfoMessage;
+import track.project.message.result.UserInfoResultMessage;
 import track.project.session.Session;
 import track.project.session.User;
 
@@ -23,7 +23,7 @@ public class UserInfoCommand implements Command {
     }
 
     @Override
-    public CommandResult execute(Session session, Message message) {
+    public void execute(Session session, Message message) {
         UserInfoMessage userInfoMessage = (UserInfoMessage) message;
         Long userId = userInfoMessage.getUserId();
         User user;
@@ -36,7 +36,8 @@ public class UserInfoCommand implements Command {
         response.add("ID = " + user.getId().toString());
         response.add("Login = " + user.getName());
         response.add("Nick = " + user.getNick());
-        return new CommandResult(response);
+        Message resultMessage = new UserInfoResultMessage(response);
+        session.getConnectionHandler().send(resultMessage);
     }
 
     @Override

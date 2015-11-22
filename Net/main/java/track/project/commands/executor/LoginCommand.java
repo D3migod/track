@@ -2,10 +2,10 @@ package track.project.commands.executor;
 
 import track.project.authorization.UserStore;
 import track.project.commands.Command;
-import track.project.commands.result.CommandResult;
-import track.project.commands.result.ResultStatus;
 import track.project.message.Message;
 import track.project.message.request.LoginMessage;
+import track.project.message.result.LoginResultMessage;
+import track.project.message.result.additional.ResultStatus;
 import track.project.net.SessionManager;
 import track.project.session.Session;
 import track.project.session.User;
@@ -24,7 +24,8 @@ public class LoginCommand implements Command {
     }
 
     @Override
-    public CommandResult execute(Session session, Message message) {
+    public void execute(Session session, Message message) {
+        Message resultMessage;
         LoginMessage loginMessage = (LoginMessage) message;
         String inputLogin = loginMessage.getLogin();
         String inputPassword = loginMessage.getPass();
@@ -33,13 +34,14 @@ public class LoginCommand implements Command {
             if (user.getPass().checkPassword(inputPassword)) {
                 session.setSessionUser(userStore.getUser(inputLogin));
                 sessionManager.registerUser(user.getId(), session.getId());
-                return new CommandResult("Successful authorization: " + inputLogin);
+                resultMessage = new LoginResultMessage("Successful authorization: " + inputLogin);
             } else {
-                return new CommandResult("Wrong password: " + inputPassword, ResultStatus.FAILED);
+                resultMessage = new LoginResultMessage("Wrong password: " + inputPassword, ResultStatus.FAILED);
             }
         } else {
-            return new CommandResult("No such user: " + inputLogin, ResultStatus.FAILED);
+            resultMessage = new LoginResultMessage("No such user: " + inputLogin, ResultStatus.FAILED);
         }
+        session.getConnectionHandler().send(resultMessage);
     }
 
     @Override

@@ -2,8 +2,8 @@ package track.project.commands.executor;
 
 import track.project.commands.Command;
 import track.project.commands.CommandType;
-import track.project.commands.result.CommandResult;
 import track.project.message.Message;
+import track.project.message.result.HelpResultMessage;
 import track.project.session.Session;
 
 import java.util.LinkedList;
@@ -22,12 +22,13 @@ public class HelpCommand implements Command {
     }
 
     @Override
-    public CommandResult execute(Session session, Message message) {
+    public void execute(Session session, Message message) {
         List<String> response = new LinkedList<>();
         for (Map.Entry<CommandType, Command> entry : commands.entrySet()) {
             response.add(entry.getValue().getDescription());
         }
-        return new CommandResult(response);
+        Message resultMessage = new HelpResultMessage(response);
+        session.getConnectionHandler().send(resultMessage);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package track.project.commands.result;
+package track.project.message.result.additional;
 
 /**
  * Created by Булат on 07.11.2015.
@@ -6,5 +6,5 @@ package track.project.commands.result;
 public enum ResultStatus {
     OK,
     FAILED,
-    NOT_LOGGINED
+    NOT_LOGGED_IN
 }

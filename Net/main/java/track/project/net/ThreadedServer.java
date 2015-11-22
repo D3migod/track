@@ -4,13 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import track.project.authorization.UserStore;
 import track.project.authorization.UserStoreStub;
+import track.project.commands.Command;
+import track.project.commands.CommandHandler;
+import track.project.commands.CommandType;
 import track.project.commands.executor.ChatCreateCommand;
 import track.project.commands.executor.ChatFindCommand;
 import track.project.commands.executor.ChatHistoryCommand;
 import track.project.commands.executor.ChatSendCommand;
-import track.project.commands.Command;
-import track.project.commands.CommandHandler;
-import track.project.commands.CommandType;
 import track.project.commands.executor.ExitCommand;
 import track.project.commands.executor.HelpCommand;
 import track.project.commands.executor.LoginCommand;
@@ -50,8 +50,6 @@ public class ThreadedServer {
             this.sessionManager = sessionManager;
             this.commandHandler = commandHandler;
             sSocket = new ServerSocket(PORT);
-
-            // FIXME: Узнайте, для чего это используется, спрошу на РК =)
             sSocket.setReuseAddress(true);
         } catch (IOException e) {
             e.printStackTrace();
@@ -60,7 +58,7 @@ public class ThreadedServer {
     }
 
     public static void main(String[] args) {
-        Protocol protocol = new StringProtocol();
+        Protocol protocol = new JsonProtocol();
         SessionManager sessionManager = new SessionManager();
 
         UserStore userStore = new UserStoreStub();
