@@ -1,9 +1,7 @@
 package track.project.commands.executor;
 
 import track.project.commands.Command;
-import track.project.jdbc.DBConnector;
 import track.project.message.Message;
-import track.project.message.MessageStore;
 import track.project.message.result.ExitResultMessage;
 import track.project.session.Session;
 

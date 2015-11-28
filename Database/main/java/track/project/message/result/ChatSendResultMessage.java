@@ -2,8 +2,8 @@ package track.project.message.result;
 
 import track.project.message.Message;
 import track.project.message.request.ChatSendMessage;
-import track.project.message.result.additional.ResultMessage;
-import track.project.message.result.additional.ResultStatus;
+import track.project.message.result.base.ResultMessage;
+import track.project.message.result.base.ResultStatus;
 
 /**
  * Created by Булат on 19.11.2015.
@@ -35,7 +35,7 @@ public class ChatSendResultMessage extends Message implements ResultMessage {
     @Override
     public void printMessage() {
         if (response != null) {
-            System.out.printf("%s", response.getTimeMessage());
+            System.out.printf("%s\n", response.getTimeString() + ": " + response.getMessage());
         }
     }
 
@@ -63,6 +63,7 @@ public class ChatSendResultMessage extends Message implements ResultMessage {
         this.statusInfo = statusInfo;
     }
 
+    @Override
     public String getStatusInfo() {
         return statusInfo;
     }
@@ -78,7 +79,17 @@ public class ChatSendResultMessage extends Message implements ResultMessage {
     }
 
     @Override
-    public boolean messageIsNull() {
-        return response == null;
+    public boolean equals(Object other) {
+
+        if (!(other instanceof ChatSendResultMessage)) {
+            return false;
+        }
+        ChatSendResultMessage that = (ChatSendResultMessage) other;
+        return equalsWithNulls(getSender(), that.getSender()) &&
+                equalsWithNulls(getId(), that.getId()) &&
+                equalsWithNulls(getType(), that.getType()) &&
+                equalsWithNulls(status, that.status) &&
+                equalsWithNulls(statusInfo, that.statusInfo) &&
+                equalsWithNulls(response, that.response);
     }
 }

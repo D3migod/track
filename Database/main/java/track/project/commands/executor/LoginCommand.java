@@ -5,7 +5,7 @@ import track.project.commands.Command;
 import track.project.message.Message;
 import track.project.message.request.LoginMessage;
 import track.project.message.result.LoginResultMessage;
-import track.project.message.result.additional.ResultStatus;
+import track.project.message.result.base.ResultStatus;
 import track.project.net.SessionManager;
 import track.project.session.Session;
 import track.project.session.User;
@@ -32,9 +32,10 @@ public class LoginCommand implements Command {
         User user = userStore.getUser(inputLogin);
         if (user != null) {
             if (user.getPass().checkPassword(inputPassword)) {
-                session.setSessionUser(userStore.getUser(inputLogin));
-                sessionManager.registerUser(user.getId(), session.getId());
-                resultMessage = new LoginResultMessage("Successful authorization: " + inputLogin);
+                session.setSessionUser(user);
+                Long userId = user.getId();
+                sessionManager.registerUser(userId, session.getId());
+                resultMessage = new LoginResultMessage("Successful authorization: " + inputLogin + "\nYour id: " + userId.toString());
             } else {
                 resultMessage = new LoginResultMessage("Wrong password: " + inputPassword, ResultStatus.FAILED);
             }

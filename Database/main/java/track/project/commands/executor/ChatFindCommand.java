@@ -6,7 +6,7 @@ import track.project.message.MessageStore;
 import track.project.message.request.ChatFindMessage;
 import track.project.message.request.ChatSendMessage;
 import track.project.message.result.ChatFindResultMessage;
-import track.project.message.result.additional.ResultStatus;
+import track.project.message.result.base.ResultStatus;
 import track.project.session.Session;
 
 import java.util.LinkedList;
@@ -56,7 +56,7 @@ public class ChatFindCommand implements Command {
                 index = messageString.indexOf(word, index + 1);
             }
             response.add("\nin the following message: ");
-            response.add(sendMessage.getTimeMessage());
+            response.add(sendMessage.getTimeString());
         }
         return response;
     }

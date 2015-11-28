@@ -14,8 +14,8 @@ import track.project.message.request.RegisterMessage;
 import track.project.message.request.UserInfoMessage;
 import track.project.message.request.UserMessage;
 import track.project.message.request.UserPassMessage;
-import track.project.message.result.additional.ResultMessage;
-import track.project.message.result.additional.ResultStatus;
+import track.project.message.result.base.ResultMessage;
+import track.project.message.result.base.ResultStatus;
 import track.project.session.Session;
 
 import java.io.IOException;
@@ -34,7 +34,7 @@ import java.util.Scanner;
  * Клиентская часть
  */
 public class ThreadedClient implements MessageListener {
-    private static String COMMAND_EXECUTED_LOG = "{} executed: {}";
+    private static String COMMAND_EXECUTED_LOG = "{} executed: {} with status info: {}";
     public static final int PORT = 19000;
     public static final String HOST = "localhost";
     static Logger log = LoggerFactory.getLogger(ThreadedClient.class);
@@ -63,10 +63,9 @@ public class ThreadedClient implements MessageListener {
     public static void main(String[] args) throws Exception {
         Protocol protocol = new JsonProtocol();
         ThreadedClient client = new ThreadedClient(protocol);
-
+        System.out.printf("$");
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.printf("$");
             String input = scanner.nextLine();
             client.processInput(input);
             if ("\\exit".equals(input)) {
@@ -120,8 +119,11 @@ public class ThreadedClient implements MessageListener {
                         ChatSendMessage chatSendMessage = new ChatSendMessage();
                         chatSendMessage.setChatId(Long.valueOf(tokens[1]));
                         StringBuilder builder = new StringBuilder();
+                        String prefix = "";
                         for (int i = 2; i < tokens.length; i++) {
-                            builder.append(tokens[i] + " ");
+                            builder.append(prefix);
+                            prefix = " ";
+                            builder.append(tokens[i]);
                         }
                         chatSendMessage.setMessage(builder.toString());
                         handler.send(chatSendMessage);
@@ -232,14 +234,11 @@ public class ThreadedClient implements MessageListener {
         ResultMessage resultMessage = (ResultMessage) message;
 
         ResultStatus resultStatus = resultMessage.getStatus();
-        log.info(COMMAND_EXECUTED_LOG, message.getType(), resultMessage.getStatus());
+        log.info(COMMAND_EXECUTED_LOG, message.getType(), resultMessage.getStatus(), resultMessage.getStatusInfo());
+        log.info("result: {}", resultMessage);
         switch (resultStatus) {
             case OK:
-                if (!resultMessage.messageIsNull()) {
-                    resultMessage.printMessage();
-                } else {
-                    System.out.printf("Success\n");
-                }
+                resultMessage.printMessage();
                 break;
             case FAILED:
                 resultMessage.printStatusInfo();

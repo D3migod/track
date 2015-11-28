@@ -7,7 +7,7 @@ import track.project.message.Message;
 import track.project.message.MessageStore;
 import track.project.message.request.ChatCreateMessage;
 import track.project.message.result.ChatCreateResultMessage;
-import track.project.message.result.additional.ResultStatus;
+import track.project.message.result.base.ResultStatus;
 import track.project.session.Session;
 
 import java.util.LinkedList;
@@ -48,8 +48,9 @@ public class ChatCreateCommand implements Command {
                 if (!rightParticipantsIds.contains(currentUserId)) {
                     rightParticipantsIds.add(session.getSessionUser().getId());
                 }
-                messageStore.addChat(new Chat(rightParticipantsIds));
-                resultMessage = new ChatCreateResultMessage(wrongParticipantsIds);
+                Chat chat = new Chat(rightParticipantsIds);
+                messageStore.addChat(chat);
+                resultMessage = new ChatCreateResultMessage(wrongParticipantsIds, chat.getId().toString());
             }
         } else {
             resultMessage = new ChatCreateResultMessage(ResultStatus.NOT_LOGGED_IN);

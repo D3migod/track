@@ -5,6 +5,7 @@ import track.project.commands.Command;
 import track.project.message.Message;
 import track.project.message.request.UserInfoMessage;
 import track.project.message.result.UserInfoResultMessage;
+import track.project.message.result.base.ResultStatus;
 import track.project.session.Session;
 import track.project.session.User;
 
@@ -27,16 +28,21 @@ public class UserInfoCommand implements Command {
         UserInfoMessage userInfoMessage = (UserInfoMessage) message;
         Long userId = userInfoMessage.getUserId();
         User user;
+        Message resultMessage;
         if (userId == -1L) {
             user = session.getSessionUser();
         } else {
             user = userStore.getUser(userId);
         }
-        List<String> response = new LinkedList<>();
-        response.add("ID = " + user.getId().toString());
-        response.add("Login = " + user.getName());
-        response.add("Nick = " + user.getNick());
-        Message resultMessage = new UserInfoResultMessage(response);
+        if (user == null) {
+            resultMessage = new UserInfoResultMessage("User with " + userId + " id does not exist", ResultStatus.FAILED);
+        } else {
+            List<String> response = new LinkedList<>();
+            response.add("ID = " + user.getId().toString());
+            response.add("Login = " + user.getName());
+            response.add("Nick = " + user.getNick());
+            resultMessage = new UserInfoResultMessage(response);
+        }
         session.getConnectionHandler().send(resultMessage);
     }
 

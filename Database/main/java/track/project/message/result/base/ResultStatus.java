@@ -1,4 +1,4 @@
-package track.project.message.result.additional;
+package track.project.message.result.base;
 
 /**
  * Created by Булат on 07.11.2015.

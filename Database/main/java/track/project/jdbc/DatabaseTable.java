@@ -1,7 +1,10 @@
 package track.project.jdbc;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import track.project.jdbc.table.UserDatabaseTable;
 
 import java.sql.Connection;
 import java.util.List;
@@ -9,6 +12,9 @@ import java.util.List;
 /**
  * Created by Булат on 23.11.2015.
  */
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+@JsonSubTypes({@JsonSubTypes.Type(value = UserDatabaseTable.class, name = "userdatabase")})
 public abstract class DatabaseTable {
     private static Logger log = LoggerFactory.getLogger(DatabaseTable.class);
     protected List<String> columns;
@@ -35,23 +41,47 @@ public abstract class DatabaseTable {
         String columnName;
         for (int i = 0; i < size - 1; i++) {
             columnName = columns.get(i);
-            query += columnName.substring(1, columnName.length() - 1) + " " + columnTypes.get(i) + ", ";
+            query += columnName + " " + columnTypes.get(i) + ", ";
         }
         columnName = columns.get(size - 1);
-        query += columnName.substring(1, columnName.length() - 1) + " " + columnTypes.get(size - 1) + ")";
+        query += columnName + " " + columnTypes.get(size - 1) + ")";
+        log.info("query: " + query);
+        return query;
+    }
+
+    protected String insertIdQuery() {
+        String query = "INSERT INTO " + tableName + " ( id ) VALUES ( DEFAULT );";
         log.info("query: " + query);
         return query;
     }
 
     protected String insertQuery() {
-        String query = "INSERT INTO " + tableName + "(";
+        String query = "INSERT INTO " + tableName + " (";
         int size = columns.size();
         for (int i = 1; i < size - 1; i++) {
             query += columns.get(i) + ", ";
         }
         query += columns.get(size - 1);
+
         query += ") VALUES(";
         for (int i = 1; i < size - 1; i++) {
+            query += "?,";
+        }
+        query += "?);";
+
+        log.info("query: " + query);
+        return query;
+    }
+
+    protected String insertWithIdQuery() {
+        String query = "INSERT INTO " + tableName + " (";
+        int size = columns.size();
+        for (int i = 0; i < size - 1; i++) {
+            query += columns.get(i) + ", ";
+        }
+        query += columns.get(size - 1);
+        query += ") VALUES(";
+        for (int i = 0; i < size - 1; i++) {
             query += "?,";
         }
         query += "?);";
@@ -59,12 +89,10 @@ public abstract class DatabaseTable {
         return query;
     }
 
-    protected String insertQueryReturn() {
-        return insertQuery() + " RETURNING ?;";
-    }
-
     protected String selectAllQuery() {
-        return "SELECT * FROM " + tableName;
+        String query = "SELECT * FROM " + tableName;
+        log.info("query: " + query);
+        return query;
     }
 
     protected String selectQuery(List<Integer> selectedColumns) {
@@ -80,16 +108,7 @@ public abstract class DatabaseTable {
     }
 
     protected String selectByIdQuery() {
-        return "SELECT * FROM " + tableName + " WHERE \"id\" = ?";
-    }
-
-    protected String selectExistsQuery(List<Integer> selectedColumns) {
-        String query = "SELECT EXISTS(SELECT 1 FROM " + tableName + " WHERE ";
-        int size = selectedColumns.size();
-        for (int i = 0; i < size - 1; i++) {
-            query += columns.get(selectedColumns.get(i)) + " = ?, ";
-        }
-        query += columns.get(selectedColumns.get(size - 1)) + " = ?);";
+        String query = "SELECT * FROM " + tableName + " WHERE id = ?";
         log.info("query: " + query);
         return query;
     }
@@ -100,13 +119,13 @@ public abstract class DatabaseTable {
         for (int i = 0; i < size - 1; i++) {
             query += columns.get(selectedColumns.get(i)) + " = ?, ";
         }
-        query += columns.get(selectedColumns.get(size - 1)) + " = ?";
+        query += columns.get(selectedColumns.get(size - 1)) + " = ?;";
         log.info("query: " + query);
         return query;
     }
 
     protected String deleteByIdQuery() {
-        return "DELETE " + tableName + "WHERE \"id\" = ?";
+        return "DELETE " + tableName + "WHERE id = ?;";
     }
 
     protected String updateQueryById(List<Integer> selectedColumns) {
@@ -115,7 +134,7 @@ public abstract class DatabaseTable {
         for (int i = 0; i < size - 1; i++) {
             query += columns.get(selectedColumns.get(i)) + " = ?, ";
         }
-        query += columns.get(selectedColumns.get(size - 1)) + " = ? WHERE \"id\" = ?";
+        query += columns.get(selectedColumns.get(size - 1)) + " = ? WHERE id = ?;";
         log.info("query: " + query);
         return query;
     }

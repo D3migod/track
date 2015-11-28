@@ -2,6 +2,8 @@ package track.project.jdbc;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import track.project.jdbc.table.MessageStoreDatabaseTable;
+import track.project.jdbc.table.UserDatabaseTable;
 import track.project.net.SessionManager;
 
 import java.sql.Connection;
@@ -13,7 +15,7 @@ import java.sql.SQLException;
  */
 public class DBConnector {
     private static final String DB_DRIVER = "org.postgresql.Driver";
-    private static final String DB_CONNECTION = "jdbc:postgresql://178.62.140.149:5432/mydb";
+    private static final String DB_CONNECTION = "jdbc:postgresql://178.62.140.149:5432/D3migod";
     private static final String DB_USER = "senthil";
     private static final String DB_PASSWORD = "ubuntu";
     private static Logger log = LoggerFactory.getLogger(DBConnector.class);

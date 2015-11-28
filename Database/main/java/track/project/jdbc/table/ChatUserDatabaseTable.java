@@ -1,7 +1,7 @@
-package track.project.jdbc;
+package track.project.jdbc.table;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import track.project.jdbc.DatabaseTable;
+import track.project.jdbc.QueryExecutor;
 import track.project.message.Chat;
 
 import java.sql.Connection;
@@ -15,13 +15,10 @@ import java.util.Map;
  * Created by Булат on 24.11.2015.
  */
 public class ChatUserDatabaseTable extends DatabaseTable {
-    private static Logger log = LoggerFactory.getLogger(MessageStoreDatabaseTable.class);
 
     public ChatUserDatabaseTable(QueryExecutor exec, Connection connection) {
         super(Arrays.asList("id", "userid"), "chatuser", exec, connection);
-        exec.execQuery(connection, createTableQuery(Arrays.asList("BIGINT", "BIGINT")), (r) -> {
-            return 0;
-        });
+        exec.execUpdate(connection, createTableQuery(Arrays.asList("BIGINT", "BIGINT")));
     }
 
     public void addChat(Chat chat) {
@@ -30,9 +27,7 @@ public class ChatUserDatabaseTable extends DatabaseTable {
         for (Long participant : participants) {
             prepared.put(1, chat.getId());
             prepared.put(2, participant);
-            exec.execQuery(connection, insertQuery(), prepared, (r) -> {
-                return 0;
-            });
+            exec.execUpdate(connection, insertWithIdQuery(), prepared);
         }
 
     }
@@ -43,7 +38,7 @@ public class ChatUserDatabaseTable extends DatabaseTable {
         return exec.execQuery(connection, selectAllWhereQuery(Arrays.asList(1)), prepared, (r) -> {
             List<Long> data = new ArrayList<>();
             while (r.next()) {
-                data.add(r.getLong(0));
+                data.add(r.getLong(1));
             }
             return data;
         });
@@ -53,9 +48,7 @@ public class ChatUserDatabaseTable extends DatabaseTable {
         Map<Integer, Object> prepared = new HashMap<>();
         prepared.put(1, chatId);
         prepared.put(2, userId);
-        exec.execQuery(connection, insertQuery(), prepared, (r) -> {
-            return 0;
-        });
+        exec.execUpdate(connection, insertWithIdQuery(), prepared);
     }
 
     public List<Long> getUsersByChatId(Long chatId) {
@@ -64,7 +57,7 @@ public class ChatUserDatabaseTable extends DatabaseTable {
         return exec.execQuery(connection, selectAllWhereQuery(Arrays.asList(0)), prepared, (r) -> {
             List<Long> data = new ArrayList<>();
             while (r.next()) {
-                data.add(r.getLong(1));
+                data.add(r.getLong(2));
             }
             return data;
         });

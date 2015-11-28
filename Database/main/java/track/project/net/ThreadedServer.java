@@ -107,5 +107,6 @@ public class ThreadedServer {
         for (ConnectionHandler handler : handlers.values()) {
             handler.stop();
         }
+        //dbConnector.close();
     }
 }

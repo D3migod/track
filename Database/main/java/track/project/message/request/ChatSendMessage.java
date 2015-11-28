@@ -17,7 +17,6 @@ public class ChatSendMessage extends Message {
     private Long time;
     private String message;
     static final String FORMAT = "MM.dd.yyyy HH:mm:ss"; //we need FORMAT if FileHistoryStore to safe message in this format
-    private static final long SECONDS_MULTIPLIER = 1000L; //converting milliseconds to seconds
 
     public ChatSendMessage() {
         setType(CommandType.CHAT_SEND);
@@ -47,8 +46,8 @@ public class ChatSendMessage extends Message {
     }
 
     @JsonIgnore
-    public String getTimeMessage() {
-        return new SimpleDateFormat(FORMAT).format(new Date(time * SECONDS_MULTIPLIER)) + " " + message;
+    public String getTimeString() {
+        return new SimpleDateFormat(FORMAT).format(new Date(time));
     }
 
     public Long getTime() {
@@ -73,5 +72,20 @@ public class ChatSendMessage extends Message {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof ChatSendMessage)) {
+            return false;
+        }
+        ChatSendMessage that = (ChatSendMessage) other;
+        return equalsWithNulls(getSender(), that.getSender()) &&
+                equalsWithNulls(getId(), that.getId()) &&
+                equalsWithNulls(getType(), that.getType()) &&
+                equalsWithNulls(chatId, that.chatId) &&
+                equalsWithNulls(time, that.time) &&
+                equalsWithNulls(message, that.message);
     }
 }

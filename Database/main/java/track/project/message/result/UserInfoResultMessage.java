@@ -1,8 +1,8 @@
 package track.project.message.result;
 
 import track.project.message.Message;
-import track.project.message.result.additional.ResultMessage;
-import track.project.message.result.additional.ResultStatus;
+import track.project.message.result.base.ResultMessage;
+import track.project.message.result.base.ResultStatus;
 
 import java.util.List;
 
@@ -62,6 +62,11 @@ public class UserInfoResultMessage extends Message implements ResultMessage {
     }
 
     @Override
+    public String getStatusInfo() {
+        return statusInfo;
+    }
+
+    @Override
     public ResultStatus getStatus() {
         return status;
     }
@@ -69,10 +74,5 @@ public class UserInfoResultMessage extends Message implements ResultMessage {
     @Override
     public void setStatus(ResultStatus status) {
         this.status = status;
-    }
-
-    @Override
-    public boolean messageIsNull() {
-        return response == null;
     }
 }

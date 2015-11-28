@@ -1,4 +1,4 @@
-package track.project.message.result.additional;
+package track.project.message.result.base;
 
 /**
  * Created by Булат on 22.11.2015.
@@ -8,11 +8,11 @@ public interface ResultMessage {
 
     void printStatusInfo();
 
+    String getStatusInfo();
+
     void setStatusInfo(String statusInfo);
 
     ResultStatus getStatus();
 
     void setStatus(ResultStatus status);
-
-    boolean messageIsNull();
 }

@@ -1,7 +1,9 @@
-package track.project.jdbc;
+package track.project.jdbc.table;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import track.project.jdbc.DatabaseTable;
+import track.project.jdbc.QueryExecutor;
 import track.project.message.Chat;
 import track.project.message.Message;
 import track.project.message.MessageStore;
@@ -28,12 +30,11 @@ public class MessageStoreDatabaseTable extends DatabaseTable implements MessageS
 
     public MessageStoreDatabaseTable(QueryExecutor exec, Connection connection, SessionManager sessionManager) {
         super(Arrays.asList("id", "messageid"), "chatmessage", exec, connection);
-        exec.execQuery(connection, createTableQuery(Arrays.asList("BIGINT", "BIGSERIAL")), (r) -> {
-            return 0;
-        });
+        exec.execUpdate(connection, createTableQuery(Arrays.asList("BIGINT", "BIGINT")));
         chatUserDatabaseTable = new ChatUserDatabaseTable(exec, connection);
         chatDatabaseTable = new ChatDatabaseTable(exec, connection);
-        sessionManager = this.sessionManager;
+        messageDatabaseTable = new MessageDatabaseTable(exec, connection);
+        this.sessionManager = sessionManager;
     }
 
     @Override
@@ -56,7 +57,7 @@ public class MessageStoreDatabaseTable extends DatabaseTable implements MessageS
             return exec.execQuery(connection, selectAllWhereQuery(Arrays.asList(0)), prepared, (r) -> {
                 List<Long> messages = new ArrayList<>();
                 while (r.next()) {
-                    messages.add(r.getLong(1));
+                    messages.add(r.getLong(2));
                 }
                 return messages;
             });
@@ -72,37 +73,28 @@ public class MessageStoreDatabaseTable extends DatabaseTable implements MessageS
 
     @Override
     public void addMessage(Long chatId, Message message) {
-        if (isChatExist(chatId)) {
-            messageDatabaseTable.addMessage(message);
-            Map<Integer, Object> prepared = new HashMap<>();
-            prepared.put(1, chatId);
-            prepared.put(2, message.getId());
-            exec.execQuery(connection, insertQuery(), prepared, (r) -> {
-                return 0;
-            });
-            List<Long> participantIds = chatUserDatabaseTable.getUsersByChatId(chatId);
-            Message resultMessage = new ChatSendResultMessage(message);
-            for (Long participant : participantIds) {
-                sessionManager.getSessionByUser(participant).getConnectionHandler().send(resultMessage);
-            }
-        } else {
-            throw new IllegalArgumentException("Chat " + chatId + " does not exist");
+        messageDatabaseTable.addMessage(message);
+        Map<Integer, Object> prepared = new HashMap<>();
+        prepared.put(1, chatId);
+        prepared.put(2, message.getId());
+        exec.execUpdate(connection, insertWithIdQuery(), prepared);
+        List<Long> participantIds = chatUserDatabaseTable.getUsersByChatId(chatId);
+        Message resultMessage = new ChatSendResultMessage(message);
+        for (Long participant : participantIds) {
+            sessionManager.getSessionByUser(participant).getConnectionHandler().send(resultMessage);
         }
     }
 
     @Override
     public void addUserToChat(Long userId, Long chatId) {
-        if (isChatExist(chatId)) {
-            chatUserDatabaseTable.addUserToChat(userId, chatId);
-        } else {
-            throw new IllegalArgumentException("Chat " + chatId + " does not exist");
-        }
+        chatUserDatabaseTable.addUserToChat(userId, chatId);
     }
 
     @Override
     public void addChat(Chat chat) {
         Long id = chatDatabaseTable.addChat();
         chat.setId(id);
+        log.info("Chat id: {}", id);
         chatUserDatabaseTable.addChat(chat);
     }
 

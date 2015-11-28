@@ -1,8 +1,8 @@
 package track.project.message.result;
 
 import track.project.message.Message;
-import track.project.message.result.additional.ResultMessage;
-import track.project.message.result.additional.ResultStatus;
+import track.project.message.result.base.ResultMessage;
+import track.project.message.result.base.ResultStatus;
 
 import java.util.List;
 
@@ -24,6 +24,12 @@ public class ChatCreateResultMessage extends Message implements ResultMessage {
         this.response = response;
     }
 
+    public ChatCreateResultMessage(List<Long> response, String statusInfo) {
+        status = ResultStatus.OK;
+        this.response = response;
+        this.statusInfo = statusInfo;
+    }
+
     public ChatCreateResultMessage(String statusInfo, ResultStatus status) {
         this.statusInfo = statusInfo;
         this.status = status;
@@ -41,6 +47,8 @@ public class ChatCreateResultMessage extends Message implements ResultMessage {
                 System.out.printf("%s", responseLong.toString() + "\n");
             }
         }
+        System.out.printf("Chat created with id: ");
+        printStatusInfo();
     }
 
     public static ResultMessage getResultOk() {
@@ -68,6 +76,11 @@ public class ChatCreateResultMessage extends Message implements ResultMessage {
     }
 
     @Override
+    public String getStatusInfo() {
+        return statusInfo;
+    }
+
+    @Override
     public ResultStatus getStatus() {
         return status;
     }
@@ -75,10 +88,5 @@ public class ChatCreateResultMessage extends Message implements ResultMessage {
     @Override
     public void setStatus(ResultStatus status) {
         this.status = status;
-    }
-
-    @Override
-    public boolean messageIsNull() {
-        return response == null;
     }
 }

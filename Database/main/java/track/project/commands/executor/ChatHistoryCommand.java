@@ -6,7 +6,7 @@ import track.project.message.MessageStore;
 import track.project.message.request.ChatHistoryMessage;
 import track.project.message.request.ChatSendMessage;
 import track.project.message.result.ChatHistoryResultMessage;
-import track.project.message.result.additional.ResultStatus;
+import track.project.message.result.base.ResultStatus;
 import track.project.session.Session;
 
 import java.util.LinkedList;
@@ -38,13 +38,13 @@ public class ChatHistoryCommand implements Command {
                     for (int i = curSize; i > 0; i--) {
                         Long sendMessageId = sendMessageIds.get(newSize - i);
                         ChatSendMessage sendMessage = (ChatSendMessage) messageStore.getMessageById(sendMessageId);
-                        response.add(sendMessage.getTimeMessage());
+                        response.add(sendMessage.getTimeString());
                     }
                 }
             } else {
                 if (sendMessageIds != null) {
                     for (Long sendMessageId : sendMessageIds) {
-                        response.add(((ChatSendMessage) messageStore.getMessageById(sendMessageId)).getTimeMessage());
+                        response.add(((ChatSendMessage) messageStore.getMessageById(sendMessageId)).getTimeString());
                     }
                 }
             }

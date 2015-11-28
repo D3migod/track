@@ -5,7 +5,7 @@ import track.project.message.Message;
 import track.project.message.MessageStore;
 import track.project.message.request.ChatSendMessage;
 import track.project.message.result.ChatSendResultMessage;
-import track.project.message.result.additional.ResultStatus;
+import track.project.message.result.base.ResultStatus;
 import track.project.session.Session;
 
 /**
@@ -31,7 +31,7 @@ public class ChatSendCommand implements Command {
                 messageStore.addMessage(chatId, sendMessage);
                 resultMessage = ChatSendResultMessage.getResultOk();
             } else {
-                resultMessage = new ChatSendResultMessage("Chat with " + chatId.toString() + " id does not exist", ResultStatus.FAILED);
+                resultMessage = new ChatSendResultMessage("Chat with id " + chatId.toString() + " does not exist", ResultStatus.FAILED);
             }
         } else {
             resultMessage = new ChatSendResultMessage(ResultStatus.NOT_LOGGED_IN);

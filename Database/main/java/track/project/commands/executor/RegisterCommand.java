@@ -6,7 +6,7 @@ import track.project.commands.Command;
 import track.project.message.Message;
 import track.project.message.request.RegisterMessage;
 import track.project.message.result.RegisterResultMessage;
-import track.project.message.result.additional.ResultStatus;
+import track.project.message.result.base.ResultStatus;
 import track.project.net.SessionManager;
 import track.project.session.Session;
 import track.project.session.User;
@@ -37,7 +37,7 @@ public class RegisterCommand implements Command {
             userStore.addUser(currentUser);
             session.setSessionUser(currentUser);
             sessionManager.registerUser(currentUser.getId(), session.getId());
-            resultMessage = new RegisterResultMessage("Successful registration: " + currentUser.getName());
+            resultMessage = new RegisterResultMessage("Successful registration: " + currentUser.getName() + "\nYour id: " + currentUser.getId().toString());
         }
         session.getConnectionHandler().send(resultMessage);
     }

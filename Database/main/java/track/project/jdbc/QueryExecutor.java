@@ -19,25 +19,16 @@ public class QueryExecutor {
     public <T> T execQuery(Connection connection, String query, ResultHandler<T> handler) {
         T value = null;
         try {
-            if (connection == null) {
-                log.info("connection == null");
-            }
             Statement stmt = connection.createStatement();
-            if (stmt == null) {
-                log.info("stmt == null");
-            }
             stmt.execute(query);
             ResultSet result = stmt.getResultSet();
-            if (result == null) {
-                log.info("result == null");
-            }
             value = handler.handle(result);
             if (result != null) {
                 result.close();
             }
             stmt.close();
         } catch (SQLException e) {
-            log.info("SQLException: {}", e);
+            log.info("SQLException: " + e.getMessage());
         }
         return value;
     }
@@ -46,61 +37,92 @@ public class QueryExecutor {
     // Подготовленный запрос
     public <T> T execQuery(Connection connection, String query, Map<Integer, Object> args, ResultHandler<T> handler) {
         T value = null;
-
-        if (connection == null) {
-            log.info("connection == null");
-            return null;
-        }
-        PreparedStatement stmt = null;
         try {
+            PreparedStatement stmt = null;
             stmt = connection.prepareStatement(query);
-        } catch (SQLException e) {
-            log.info("SQLException in preparing statement: " + e.getMessage());
-            return null;
-        }
-        if (stmt == null) {
-            log.info("stmt == null");
-            return null;
-        }
-        try {
             for (Map.Entry<Integer, Object> entry : args.entrySet()) {
                 stmt.setObject(entry.getKey(), entry.getValue());
             }
-        } catch (SQLException e) {
-            log.info("SQLException in setting object: " + e.getMessage());
-            return null;
-        }
-        ResultSet rs = null;
-        try {
-            rs = stmt.executeQuery();
-        } catch (SQLException e) {
-            log.info("SQLException in executing query: " + e.getMessage());
-            return null;
-        }
-        if (rs == null) {
-            log.info("result == null");
-        }
-        try {
+            ResultSet rs = stmt.executeQuery();
+            if (rs == null) {
+                log.info("result == null");
+            }
             value = handler.handle(rs);
-        } catch (SQLException e) {
-            log.info("SQLException in handling result: " + e.getMessage());
-            return null;
-        }
-        try {
             if (rs != null) {
                 rs.close();
             }
-        } catch (SQLException e) {
-            log.info("SQLException in closing rs: " + e.getMessage());
-            return null;
-        }
-        try {
+
             stmt.close();
         } catch (SQLException e) {
-            log.info("SQLException in closing stmt: " + e.getMessage());
+            log.info("SQLException in exec query: " + e.getMessage());
             return null;
         }
-        log.info("value: {}", value);
         return value;
+    }
+
+    public Long execUpdate(Connection connection, String query, Map<Integer, Object> args, String columnName) {
+        Long id = null;
+        try {
+            PreparedStatement stmt = connection.prepareStatement(query,
+                    new String[]{columnName});
+            for (Map.Entry<Integer, Object> entry : args.entrySet()) {
+                stmt.setObject(entry.getKey(), entry.getValue());
+            }
+            if (stmt.executeUpdate() > 0) {
+                ResultSet generatedKeys = stmt.getGeneratedKeys();
+                if (null != generatedKeys && generatedKeys.next()) {
+                    id = generatedKeys.getLong(1);
+                }
+                generatedKeys.close();
+            }
+
+            stmt.close();
+        } catch (SQLException e) {
+            log.info("SQLException in exec update: " + e.getMessage());
+        }
+        return id;
+    }
+
+    public void execUpdate(Connection connection, String query, Map<Integer, Object> args) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(query);
+            for (Map.Entry<Integer, Object> entry : args.entrySet()) {
+                stmt.setObject(entry.getKey(), entry.getValue());
+            }
+            stmt.executeUpdate();
+
+            stmt.close();
+        } catch (SQLException e) {
+            log.info("SQLException in exec update: " + e.getMessage());
+        }
+    }
+
+    public Long execUpdate(Connection connection, String query, String columnName) {
+        Long id = null;
+        try {
+            PreparedStatement stmt = connection.prepareStatement(query,
+                    new String[]{columnName});
+            if (stmt.executeUpdate() > 0) {
+                ResultSet generatedKeys = stmt.getGeneratedKeys();
+                if (null != generatedKeys && generatedKeys.next()) {
+                    id = generatedKeys.getLong(1);
+                }
+                generatedKeys.close();
+            }
+            stmt.close();
+        } catch (SQLException e) {
+            log.info("SQLException in exec update: " + e.getMessage());
+        }
+        return id;
+    }
+
+    public void execUpdate(Connection connection, String query) {
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate(query);
+            stmt.close();
+        } catch (SQLException e) {
+            log.info("SQLException in exec update: " + e.getMessage());
+        }
     }
 }

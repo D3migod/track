@@ -24,6 +24,7 @@ public class User {
     }
 
     public User(Long id, String name, Password pass, String nick) {
+        this.id = id;
         this.name = name;
         this.pass = pass;
         this.nick = nick;

@@ -6,7 +6,7 @@ import track.project.commands.Command;
 import track.project.message.Message;
 import track.project.message.request.UserPassMessage;
 import track.project.message.result.UserPassResultMessage;
-import track.project.message.result.additional.ResultStatus;
+import track.project.message.result.base.ResultStatus;
 import track.project.session.Session;
 import track.project.session.User;
 
@@ -17,9 +17,11 @@ public class UserPassCommand implements Command {
     private final String description = "\\user_pass Old_pass New_pass - change password from \"Old_pass\" to \"New_pass\".";
 
     UserStore userStore;
+
     public UserPassCommand(UserStore userStore) {
         this.userStore = userStore;
     }
+
     @Override
     public void execute(Session session, Message message) {
         Message resultMessage;
